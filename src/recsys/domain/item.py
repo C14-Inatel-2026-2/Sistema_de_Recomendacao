@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 @dataclass(frozen=True)
-class item:
+class Item:
     id: str
     titulo: str
     categoria: str

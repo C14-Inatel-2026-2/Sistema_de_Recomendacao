@@ -1,0 +1,14 @@
+# Ambientes Virtuais (Virtual Environments)
+.venv/
+venv/
+ENV/
+env/
+
+# Arquivos temporários do Python (Compilados)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Arquivos de configuração e dados sensíveis
+.env

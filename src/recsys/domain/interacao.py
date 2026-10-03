@@ -4,7 +4,7 @@ from datetime import datetime
 @dataclass(frozen=True)
 class Interacao:
     usuario_id: str
-    item_it: str
+    item_id: str
     nota: float
     timestamp: datetime
 

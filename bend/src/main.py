@@ -1,13 +1,27 @@
+import uvicorn
 from datetime import datetime
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 
 from recsys.domain.interacao import Interacao
-from recsys.domain.item import Item
-from recsys.domain.usuario import Usuario
+from recsys.domain.item import Item, Itens
+from recsys.domain.usuario import Usuario, Usuarios
 from recsys.repositories.repositorio_interacao import RepositorioInteracaoMemoria
 from recsys.strategies.recomendador_factory import RecomendadorFactory, TipoRecomendador
 
 app = FastAPI(title="Sistema de Recomendação")
+
+origins = [
+    'http://localhost:5173'
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=['*'],
+    allow_header=['*'],
+)
 
 _repositorio = RepositorioInteracaoMemoria()
 _usuarios: dict[str, Usuario] = {}
@@ -19,14 +33,21 @@ def health() -> dict[str, str]:
     return {"status": "ok"}
 
 
-@app.post("/usuarios", status_code=201)
+@app.post("/usuarios", response_model=Usuario)
 def criar_usuario(id: str, nome: str) -> Usuario:
     usuario = Usuario(id=id, nome=nome)
     _usuarios[usuario.id] = usuario
     return usuario
 
+@app.get("/usuarios", response_model=Usuarios)
+def get_usuario() -> Usuarios:
+    keys = []
+    for _, u in _usuarios:
+        keys.append(u)
+    return Usuarios(keys)
 
-@app.post("/itens", status_code=201)
+
+@app.post("/itens", response_model=Item)
 def criar_item(id: str, titulo: str, categoria: str) -> Item:
     item = Item(id=id, titulo=titulo, categoria=categoria)
     _catalogo[item.id] = item
@@ -47,7 +68,7 @@ def registrar_interacao(usuario_id: str, item_id: str, nota: float) -> dict[str,
     return {"status": "registrado"}
 
 
-@app.get("/recomendacoes/{usuario_id}")
+@app.get("/recomendacoes/{usuario_id}", response_model=RecomendadorFactory)
 def recomendar(
     usuario_id: str, tipo: TipoRecomendador = TipoRecomendador.HIBRIDA, n: int = 5
 ) -> list[Item]:
@@ -57,3 +78,6 @@ def recomendar(
 
     estrategia = RecomendadorFactory.criar(tipo, _repositorio, _catalogo)
     return estrategia.recomendar(usuario, n=n)
+
+if __name__ == '__main__':
+    uvicorn.run(app, host='0.0.0.0', port='8000')

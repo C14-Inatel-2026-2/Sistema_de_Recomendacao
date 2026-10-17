@@ -11,3 +11,6 @@ class Usuario:
             raise ValueError("Usuário precisa de um ID.")
         if not self.nome:
             raise ValueError("Usuário precisa de um nome.")
+
+class Usuarios:
+    usuarios: list[Usuario]

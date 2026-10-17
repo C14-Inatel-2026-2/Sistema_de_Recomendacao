@@ -7,7 +7,7 @@ const CriaUsuarioForm = ({ criaUsuario }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (idUsuario && nomeUsuario) {
-        criaUsuario({id: idUsuario, nome: nomeUsuario});
+        criaUsuario(idUsuario, nomeUsuario);
         setIdUsuario('');
         setNomeUsuario('');
     }

@@ -8,7 +8,7 @@ const CriaItemForm = ({ criaItem }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     if (idItem && tituloItem && categoriaItem) {
-        criaItem({id: idItem, titulo: tituloItem, categoria: categoriaItem});
+        criaItem(idItem, tituloItem, categoriaItem);
         setIdItem('');
         setTituloItem('');
         setCategoriaItem('');
@@ -34,7 +34,7 @@ const CriaItemForm = ({ criaItem }) => {
       <input
         type="text"
         value={categoriaItem}
-        onChange={(e) => setTituloItem(e.target.value)}
+        onChange={(e) => setCategoriaItem(e.target.value)}
         placeholder="Informe a categoria do item"
       />
       <button type="submit">Criar Item</button>

@@ -11,6 +11,7 @@ class AvaliadorMetrica:
         acertos = sum(1 for i in recomendados if i.id in relevantes)
         return acertos / len(recomendados)
 
+    @staticmethod
     def recall(recomendados: list[Item], relevantes: set[str]) -> float:
         """
         Proporção de itens relevantes que foram recomendados.

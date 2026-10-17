@@ -3,12 +3,12 @@ import api from "../api.js";
 import CriaUsuarioForm from './CriaUsuarioForm';
 
 const Usuarios = () => {
-  const [usuarios, setUser] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
 
   const fetchUsuario = async () => {
     try {
       const response = await api.get('/usuarios');
-      setUser(response.data.usuarios);
+      setUsuarios(response.data.usuarios);
     } catch (error) {
       console.error("Error fetching users", error);
     }
@@ -31,8 +31,8 @@ const Usuarios = () => {
     <div>
       <h2>Lista de Usuários</h2>
       <ul>
-        {usuarios.map((usuario, id) => (
-          <li key={id}>{usuario.nome}</li>
+        {usuarios && usuarios.map((usuario) => (
+          <li key={usuario.id}>{usuario.nome}</li>
         ))}
       </ul>
       <CriaUsuarioForm criaUsuario={criaUsuario} />

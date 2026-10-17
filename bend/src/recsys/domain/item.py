@@ -12,6 +12,3 @@ class Item:
             raise ValueError("O item precisa de um ID.")
         if not self.titulo:
             raise ValueError("O item precisa de um título.")
-
-class Itens:
-    itens: list[Item]

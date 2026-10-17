@@ -48,7 +48,7 @@ class FiltragemColaborativa(RecomendadorStrategy):
         if len(similaridades) < self._min_similar:
             return self._itens_populares(excluir = set(notas_usuario), n=n)
 
-        pontuacao_item: dict(str, float) = defaultdict(float)
+        pontuacao_item: dict[str, float] = defaultdict(float)
         for outro_id, valor_similar in similaridades:
             for item_id, nota_item in notas_por_usuario[outro_id].items():
                 if item_id in notas_usuario:
@@ -69,7 +69,7 @@ class FiltragemColaborativa(RecomendadorStrategy):
 
         return recomendados
 
-    def _itens_populares(self, excluir: set(), n: int) -> list[Item]:
+    def _itens_populares(self, excluir: set[str], n: int) -> list[Item]:
         contagem: dict[str, int] = defaultdict(int)
         for interacao in self._repositorio.buscar_todas():
             contagem[interacao.item_id] += 1

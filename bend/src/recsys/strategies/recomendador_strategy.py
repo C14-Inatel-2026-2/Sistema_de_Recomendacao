@@ -5,5 +5,5 @@ from recsys.domain.usuario import Usuario
 
 class RecomendadorStrategy(ABC):
     @abstractmethod
-    def recomendar(self, usuario: Usuario, n: int) -> list[Item]:
+    def recomendar(self, usuario: Usuario, n: int = 5) -> list[Item]:
         ...

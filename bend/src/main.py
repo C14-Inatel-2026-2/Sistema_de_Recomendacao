@@ -4,8 +4,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from recsys.domain.interacao import Interacao
-from recsys.domain.item import Item, Itens
-from recsys.domain.usuario import Usuario, Usuarios
+from recsys.domain.item import Item
+from recsys.domain.usuario import Usuario
 from recsys.repositories.repositorio_interacao import RepositorioInteracaoMemoria
 from recsys.strategies.recomendador_factory import RecomendadorFactory, TipoRecomendador
 
@@ -20,7 +20,7 @@ app.add_middleware(
     allow_origins=origins,
     allow_credentials=True,
     allow_methods=['*'],
-    allow_header=['*'],
+    allow_headers=['*'],
 )
 
 _repositorio = RepositorioInteracaoMemoria()
@@ -39,12 +39,9 @@ def criar_usuario(id: str, nome: str) -> Usuario:
     _usuarios[usuario.id] = usuario
     return usuario
 
-@app.get("/usuarios", response_model=Usuarios)
-def get_usuario() -> Usuarios:
-    keys = []
-    for _, u in _usuarios:
-        keys.append(u)
-    return Usuarios(keys)
+@app.get("/usuarios", response_model=list[Usuario])
+def listar_usuarios() -> list[Usuario]:
+    return list(_usuarios.values())
 
 
 @app.post("/itens", response_model=Item)
@@ -53,6 +50,9 @@ def criar_item(id: str, titulo: str, categoria: str) -> Item:
     _catalogo[item.id] = item
     return item
 
+@app.get("/itens", response_model=list[Item])
+def listar_itens() -> list[Item]:
+    return list(_catalogo.values())
 
 @app.post("/interacoes", status_code=201)
 def registrar_interacao(usuario_id: str, item_id: str, nota: float) -> dict[str, str]:
@@ -62,13 +62,13 @@ def registrar_interacao(usuario_id: str, item_id: str, nota: float) -> dict[str,
         raise HTTPException(status_code=404, detail="Item nao encontrado")
 
     interacao = Interacao(
-        usuario_id=usuario_id, item_id=item_id, nota=nota, timestamp=datetime.utcnow()
+        usuario_id=usuario_id, item_id=item_id, nota=nota, timestamp=datetime.now(timezone.utc)
     )
     _repositorio.salvar(interacao)
     return {"status": "registrado"}
 
 
-@app.get("/recomendacoes/{usuario_id}", response_model=RecomendadorFactory)
+@app.get("/recomendacoes/{usuario_id}", response_model=list[Item])
 def recomendar(
     usuario_id: str, tipo: TipoRecomendador = TipoRecomendador.HIBRIDA, n: int = 5
 ) -> list[Item]:
@@ -80,4 +80,4 @@ def recomendar(
     return estrategia.recomendar(usuario, n=n)
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port='8000')
+    uvicorn.run(app, host='0.0.0.0', port=8000)

@@ -8,7 +8,7 @@ const Usuarios = () => {
   const fetchUsuario = async () => {
     try {
       const response = await api.get('/usuarios');
-      setUsuarios(response.data.usuarios);
+      setUsuarios(response.data);
     } catch (error) {
       console.error("Error fetching users", error);
     }

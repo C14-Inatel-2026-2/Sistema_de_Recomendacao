@@ -12,19 +12,24 @@ e entre outros itens com base em seu histórico de preferências implícitas
 
 ## Tecnologias
 
-- **Linguagem:** Python 3 + FastAPI + Scikit-learn
+- **Linguagem:** Backend { Python 3 + FastAPI + Scikit-learn } // Frontend { React }
 - **Dados:** Pandas para manipulação de dataset públicos (MoovieLens, Goodreads, etc)
-- **Gerenciamento de dependências:** pip (`requirements.txt`)
-- **Testes:** pytest
+- **Gerenciamento de dependências:** backend { pip (`requirements.txt`) } // front-end { npm }
+- **Testes:** backend { pytest } // front-end { vitest }
 - **Banco de dados:** SQLite
 
 ## Arquitetura
  
 ```
-src/recsys/
-├── domain/          # Entidades do domínio (Usuario, Item, Interacao)
-├── strategies/       # Strategy pattern: algoritmos de recomendação
-├── repositories/     # Acesso a dados (interações, itens)
-├── metrics/           # Avaliação de qualidade (precisão, recall)
-└── api/               # Camada web (FastAPI)
+bend/
+└── src/recsys/
+    ├── domain/          # Entidades do domínio (Usuario, Item, Interacao)
+    ├── strategies/       # Strategy pattern: algoritmos de recomendação
+    ├── repositories/     # Acesso a dados (interações, itens)
+    └── metrics/           # Avaliação de qualidade (precisão, recall)
+fend/
+└── src/
+    └── components/        # Interfaces de Usuário
+    ├── hooks/           # Funções de estados
+    └── pages/           # Páginas do sistema
 ```

@@ -1,20 +1,34 @@
-import { useState } from 'react';
-import './App.css';
-import Usuarios from './components/Usuarios';
+import { useEffect, useState } from 'react';
+import api from './api.js';
+import SeletorUsuario from './components/SeletorUsuario';
+import Home from './pages/Home';
+import './Home.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [usuarios, setUsuarios] = useState([]);
+  const [usuarioId, setUsuarioId] = useState('');
+
+  useEffect(() => {
+    api
+      .get('/usuarios')
+      .then(({ data }) => {
+        setUsuarios(data);
+        setUsuarioId(data[0]?.id ?? '');
+      })
+      .catch((e) => console.error('Erro ao buscar usuários.', e));
+  }, []);
 
   return (
     <div className="App">
-        <header className="App-header">
-            <h1>Sistema de Recomendação</h1>
-        </header>
-        <main>
-            <Usuarios/>
-        </main>
+      <header className="topo">
+        <h1>Sistema de Recomendação</h1>
+        <SeletorUsuario usuarios={usuarios} usuarioId={usuarioId} onChange={setUsuarioId} />
+      </header>
+      <main>
+        <Home usuarioId={usuarioId} />
+      </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

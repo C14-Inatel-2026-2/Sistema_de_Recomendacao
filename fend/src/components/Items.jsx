@@ -31,8 +31,8 @@ const Itens = () => {
     <div>
       <h2>Lista de Itens</h2>
       <ul>
-        {itens && itens.map(item) => (
-          <li key={item.id}>{{item.titulo} ({item.categoria})}</li>
+        {itens && itens.map((item) => (
+          <li key={item.id}>{item.titulo} ({item.categoria})</li>
         ))}
       </ul>
       <CriaItemForm criaItem={criaItem} />

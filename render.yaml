@@ -19,7 +19,6 @@ services:
   - type: web
     name: recsys-front
     runtime: static
-    plan: free
     rootDir: fend
     buildCommand: npm ci && npm run build
     staticPublishPath: dist

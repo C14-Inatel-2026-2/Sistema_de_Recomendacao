@@ -12,7 +12,7 @@ e entre outros itens com base em seu histórico de preferências implícitas
 
 ## Tecnologias
 
-- **Linguagem:** Backend { Python 3 + FastAPI + Scikit-learn } // Frontend { React }
+- **Linguagem:** Backend { Python 3 + FastAPI + Scikit-learn } // Frontend { React + Vite }
 - **Dados:** Pandas para manipulação de dataset públicos (MoovieLens, Goodreads, etc)
 - **Gerenciamento de dependências:** backend { pip (`requirements.txt`) } // front-end { npm }
 - **Testes:** backend { pytest } // front-end { vitest }

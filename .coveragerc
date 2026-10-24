@@ -1,0 +1,4 @@
+# Mede a cobertura so do codigo da aplicacao, nao dos proprios testes.
+[run]
+omit =
+    */tests/*

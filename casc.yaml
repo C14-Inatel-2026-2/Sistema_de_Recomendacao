@@ -1,0 +1,67 @@
+jenkins:
+  systemMessage: "Jenkins do projeto C14 (Sistema de Recomendacao) - configurado por jenkins/casc.yaml"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "${JENKINS_ADMIN_ID}"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: "github"
+              description: "Token do GitHub para baixar o repositorio"
+              username: "${GITHUB_USER}"
+              password: "${GITHUB_TOKEN}"
+          - string:
+              scope: GLOBAL
+              id: "render-hook-api"
+              description: "URL secreta que dispara o deploy do backend no Render"
+              secret: "${RENDER_HOOK_API}"
+          - string:
+              scope: GLOBAL
+              id: "render-hook-front"
+              description: "URL secreta que dispara o deploy do frontend no Render"
+              secret: "${RENDER_HOOK_FRONT}"
+
+jobs:
+  - script: |
+      multibranchPipelineJob('recsys') {
+          displayName('recsys')
+          description('Pipeline Build -> Test -> Deploy')
+          branchSources {
+              branchSource {
+                  source {
+                      git {
+                          id('recsys-git')
+                          remote('${GITHUB_REPO_URL}')
+                          credentialsId('github')
+                          traits {
+                              gitBranchDiscovery()
+                          }
+                      }
+                  }
+              }
+          }
+          triggers {
+              periodicFolderTrigger {
+                  interval('1m')
+              }
+          }
+          orphanedItemStrategy {
+              discardOldItems {
+                  numToKeep(5)
+              }
+          }
+      }

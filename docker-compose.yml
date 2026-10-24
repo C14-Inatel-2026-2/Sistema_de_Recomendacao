@@ -1,0 +1,20 @@
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+    env_file: .env
+    environment:
+      # pula o assistente de instalacao (plugins e usuario ja vem prontos)
+      # o CSP vazio deixa o Jenkins exibir os relatorios HTML de cobertura com CSS/JS
+      JAVA_OPTS: "-Djenkins.install.runSetupWizard=false -Dhudson.model.DirectoryBrowserSupport.CSP="
+      # onde esta a configuracao como codigo
+      CASC_JENKINS_CONFIG: /var/jenkins_config/casc.yaml
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - ./jenkins/casc.yaml:/var/jenkins_config/casc.yaml:ro
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:

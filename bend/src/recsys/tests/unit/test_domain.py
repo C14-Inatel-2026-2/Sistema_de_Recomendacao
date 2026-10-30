@@ -44,3 +44,42 @@ class TestInteracao:
             Interacao(
                 usuario_id="u1", item_id="i1", nota=nota_invalida, timestamp=datetime(2026, 1, 1)
             )
+
+
+class TestUltimasInteracoes:
+    def test_reavaliacao_substitui_a_anterior(self) -> None:
+        from recsys.domain.interacao import ultimas_interacoes
+
+        antiga = Interacao("u1", "i1", 5.0, datetime(2026, 1, 1))
+        nova = Interacao("u1", "i1", 1.0, datetime(2026, 1, 2))
+
+        assert ultimas_interacoes([antiga, nova]) == [nova]
+
+    def test_vale_o_timestamp_e_nao_a_ordem_de_chegada(self) -> None:
+        from recsys.domain.interacao import ultimas_interacoes
+
+        antiga = Interacao("u1", "i1", 5.0, datetime(2026, 1, 1))
+        nova = Interacao("u1", "i1", 1.0, datetime(2026, 1, 2))
+
+        assert ultimas_interacoes([nova, antiga]) == [nova]
+
+    def test_empate_de_timestamp_vale_a_ultima_registrada(self) -> None:
+        from recsys.domain.interacao import ultimas_interacoes
+
+        agora = datetime(2026, 1, 1)
+        primeira = Interacao("u1", "i1", 5.0, agora)
+        segunda = Interacao("u1", "i1", 2.0, agora)
+
+        assert ultimas_interacoes([primeira, segunda]) == [segunda]
+
+    def test_usuarios_e_itens_diferentes_nao_se_misturam(self) -> None:
+        from recsys.domain.interacao import ultimas_interacoes
+
+        agora = datetime(2026, 1, 1)
+        interacoes = [
+            Interacao("u1", "i1", 5.0, agora),
+            Interacao("u2", "i1", 3.0, agora),
+            Interacao("u1", "i2", 4.0, agora),
+        ]
+
+        assert len(ultimas_interacoes(interacoes)) == 3

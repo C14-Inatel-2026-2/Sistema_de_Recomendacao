@@ -1,6 +1,7 @@
 from collections import Counter
 
 from recsys.strategies.recomendador_strategy import RecomendadorStrategy
+from recsys.domain.interacao import ultimas_interacoes
 from recsys.domain.usuario import Usuario
 from recsys.domain.item import Item
 from recsys.repositories.repositorio_interacao import RepositorioInteracao
@@ -24,7 +25,7 @@ class FiltragemConteudo(RecomendadorStrategy):
         self._catalogo = catalogo
 
     def recomendar(self, usuario: Usuario, n: int = 5) -> list[Item]:
-        interacoes_usuario = self._repositorio.buscar_por_usuario(usuario.id)
+        interacoes_usuario = ultimas_interacoes(self._repositorio.buscar_por_usuario(usuario.id))
         avaliados = {i.item_id for i in interacoes_usuario}
 
         categorias_preferida = Counter(

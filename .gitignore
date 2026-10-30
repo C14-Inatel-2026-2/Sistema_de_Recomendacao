@@ -37,3 +37,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Banco SQLite local e artefatos de teste
+*.db
+.coverage
+reports/

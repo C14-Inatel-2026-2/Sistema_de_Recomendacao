@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from recsys.domain.interacao import Interacao
 from recsys.domain.item import Item
 from recsys.domain.usuario import Usuario
-from recsys.repositories.repositorio_interacao import RepositorioInteracao
+from recsys.repositories.repositorios import Repositorios
 
 JOGOS = [
     ("witcher3", "The Witcher 3", "rpg"),
@@ -44,18 +44,22 @@ AVALIACOES = {
 }
 
 
-def popular(
-    usuarios: dict[str, Usuario],
-    catalogo: dict[str, Item],
-    repositorio: RepositorioInteracao,
-) -> None:
+def popular_se_vazio(repositorios: Repositorios) -> bool:
+    """Carrega os dados de exemplo apenas em um banco virgem.
+
+    Idempotente: com o banco persistente, reiniciar a API não pode duplicar
+    avaliações. Devolve True se carregou, False se já havia dados.
+    """
+    if repositorios.usuarios.listar() or repositorios.itens.listar():
+        return False
     for id_, titulo, categoria in JOGOS:
-        catalogo[id_] = Item(id=id_, titulo=titulo, categoria=categoria)
+        repositorios.itens.salvar(Item(id=id_, titulo=titulo, categoria=categoria))
     for id_, nome in USUARIOS:
-        usuarios[id_] = Usuario(id=id_, nome=nome)
+        repositorios.usuarios.salvar(Usuario(id=id_, nome=nome))
     agora = datetime.now(timezone.utc)
     for usuario_id, notas in AVALIACOES.items():
         for item_id, nota in notas.items():
-            repositorio.salvar(
+            repositorios.interacoes.salvar(
                 Interacao(usuario_id=usuario_id, item_id=item_id, nota=nota, timestamp=agora)
             )
+    return True

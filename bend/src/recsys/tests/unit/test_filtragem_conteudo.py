@@ -58,3 +58,19 @@ class TestFiltragemConteudo:
 
         ids_recomendados = {item.id for item in recomendacoes}
         assert "livro-1" not in ids_recomendados
+
+    def test_reavaliacao_negativa_remove_a_categoria_preferida(
+        self, catalogo: dict[str, Item]
+    ) -> None:
+        # Regressão: antes, o 5.0 antigo continuava puxando "ficcao-cientifica"
+        # mesmo depois de a usuária trocar a nota para 1.0.
+        from datetime import datetime
+
+        from recsys.domain.interacao import Interacao
+
+        repositorio = RepositorioInteracaoMemoria()
+        repositorio.salvar(Interacao("u1", "livro-1", 5.0, datetime(2026, 1, 1)))
+        repositorio.salvar(Interacao("u1", "livro-1", 1.0, datetime(2026, 1, 2)))
+        recomendador = FiltragemConteudo(repositorio, catalogo)
+
+        assert recomendador.recomendar(Usuario(id="u1", nome="U"), n=5) == []

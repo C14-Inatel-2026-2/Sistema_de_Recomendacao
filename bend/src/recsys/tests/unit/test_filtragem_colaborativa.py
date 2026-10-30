@@ -64,3 +64,36 @@ class TestFiltragemColaborativa:
         recomendacoes = recomendador.recomendar(usuario, n=3)
 
         assert recomendacoes == []
+
+    def test_nao_recomenda_item_mal_avaliado_pelo_vizinho(self, catalogo: dict[str, Item]) -> None:
+        from datetime import datetime
+
+        from recsys.domain.interacao import Interacao
+
+        agora = datetime(2026, 1, 1)
+        repositorio = RepositorioInteracaoMemoria()
+        repositorio.salvar(Interacao("alice", "livro-1", 5.0, agora))
+        repositorio.salvar(Interacao("bruno", "livro-1", 5.0, agora))
+        repositorio.salvar(Interacao("bruno", "livro-5", 1.0, agora))  # Bruno detestou
+        recomendador = FiltragemColaborativa(repositorio, catalogo)
+
+        ids = {i.id for i in recomendador.recomendar(Usuario(id="alice", nome="A"), n=1)}
+
+        assert "livro-5" not in ids
+
+    def test_popularidade_conta_usuarios_distintos(self, catalogo: dict[str, Item]) -> None:
+        # Regressão: uma pessoa reavaliando 3 vezes o mesmo item não o torna "popular".
+        from datetime import datetime
+
+        from recsys.domain.interacao import Interacao
+
+        repositorio = RepositorioInteracaoMemoria()
+        for dia in (1, 2, 3):
+            repositorio.salvar(Interacao("bruno", "livro-5", 5.0, datetime(2026, 1, dia)))
+        repositorio.salvar(Interacao("bruno", "livro-1", 5.0, datetime(2026, 1, 1)))
+        repositorio.salvar(Interacao("carla", "livro-1", 5.0, datetime(2026, 1, 1)))
+        recomendador = FiltragemColaborativa(repositorio, catalogo)
+
+        populares = recomendador.recomendar(Usuario(id="novo", nome="N"), n=2)
+
+        assert [i.id for i in populares] == ["livro-1", "livro-5"]
